@@ -27,7 +27,7 @@ ss.slice = da._slice;
 //
 
 ss.htmlEvent = function htmlEvent(name) {
-  return `e=>require('direape@0.1').run('${da.pid}','${name}',e)`;
+  return `require('direape@0.1').run('${da.pid}','${name}',arguments[0])`;
 }
 ss.html = function html(h) {
   da.setJS(['ui', 'html'], h);
