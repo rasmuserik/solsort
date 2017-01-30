@@ -1,0 +1,8 @@
+language: node_js
+deploy:
+  provider: npm
+  email: npmjs@solsort.com
+  api_key:
+    secure: TY+vyQhpbsrM4XgdEi5zcrNTm+G2eJOwr2ZSC4hrbXKiboMgFgdEgfJkn3P7Pu3HWOvoWsbuQMcUny8DdrIuQaAPsC2WwBomTfgfLye8Dqj45uTaGFSRrNwZH6PN/q8IoM6gL7bMQaHxHNiZaJUyhGu+W+r0edLpjfRKqyNa8W4=
+  on:
+    repo: solsort/solsort
