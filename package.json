@@ -1,0 +1,18 @@
+{
+  "name": "solsort",
+  "version": "0.1.0",
+  "description": "solsort library",
+  "main": "solsort.js",
+  "scripts": { "test": "true" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solsort/solsort"
+  },
+  "keywords": [],
+  "author": "RasmusErik / solsort.com",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/solsort/solsort/issues"
+  },
+  "homepage": "http://solsort.solsort.com"
+}
