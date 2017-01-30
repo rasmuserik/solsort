@@ -25,15 +25,13 @@ ss.slice = da._slice;
 
 // # UI
 //
-ss.html = html;
 
-ss.htmlEvent = htmlEvent;
-function htmlEvent(name) {
+ss.htmlEvent = function htmlEvent(name) {
   return `function(e){require('direape@0.1').run('${da.pid}','${name}',e}`;
 }
-function html(h) {
+ss.html = function html(h) {
   da.setJS(['ui', 'html'], h);
-}
+};
 
 // Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in the main threa.
 
