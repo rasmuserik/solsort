@@ -13,13 +13,27 @@
 Library, primarily for use within appedit. Wraps direape and reun, and adds extra functionality
 
 
-    
     var reun = require('reun@0.1');
     var da = require('direape@0.1');
+    var ss = exports;
+    
+# DireApe passthrough
+    
+    ss.handle = da.handle;
+    ss.jsonify = da._jsonify;
+    ss.slice = da._slice;
     
 # UI
 
-    var ss = exports;
+    ss.html = html;
+    
+    ss.htmlEvent = htmlEvent;
+    function htmlEvent(name) {
+      return `function(e){require('direape@0.1').run('${da.pid}','${name}',e}`;
+    }
+    function html(h) {
+      da.setJS(['ui', 'html'], h);
+    }
     
 Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in the main threa.
     
@@ -76,7 +90,14 @@ Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in 
     }
     
 # Main function for testing
+    
     ss.main = () => {
 da.setJS(['ui', 'html'], ['h1', 'hello ', ['em', 'world!']]);
     };
     
+# License
+
+This software is copyrighted solsort.com ApS, and available under GPLv3, as well as proprietary license upon request.
+
+Versions older than 10 years also fall into the public domain.
+
