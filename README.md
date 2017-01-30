@@ -11,7 +11,16 @@
 *Unstable - under development - do not use it yet*
 
 Library, primarily for use within appedit. Wraps direape and reun, and adds extra functionality
+# Examples
 
+Make the app consist of a button, and replace it with text when clicked.
+
+```javascript
+solsort.handle('hello', () => solsort.html('bye');
+solsort.html(`<button onclick=#{solsort.htmlEvent('hello')}>Hi</button>`);
+```
+
+# Dependencies
 
     var reun = require('reun@0.1');
     var da = require('direape@0.1');
@@ -26,13 +35,39 @@ Library, primarily for use within appedit. Wraps direape and reun, and adds extr
 # UI
 
     
-    ss.htmlEvent = function htmlEvent(name) {
-      return `require('direape@0.1').run('${da.pid}','${name}',arguments[0])`;
-    }
+    ss.htmlEvent = function htmlEvent(name, propagate) {
+      console.log(module.uri);
+      console.log(require('http://localhost:8080/solsort.js'));
+      return `require('${module.uri}').domEventHandler('${da.pid}','${name}'` +
+          `,'${propagate}')(arguments[0])`;
+    };
     ss.html = function html(h) {
       da.setJS(['ui', 'html'], h);
     };
     
+    var eventWhitelist =
+    ['timeStamp', 'target', 'touches', 'clientX', 'clientY',
+      'charCode', 'keyCode', 'key', 'code', 'location',
+     'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat']
+    function domEventHandler(pid,name,propagate) {
+      return function(e) {
+        if(!propagate) {
+          e.preventDefault();
+        }
+        var result = {};
+        for(var i = 0; i < eventWhitelist.length; ++i) {
+          var k = eventWhitelist[i];
+          if (typeof e[k] !== 'undefined') {
+            result[k] = ss.jsonify(e[k]);
+          }
+        }
+        da.run(pid, name, result);
+      }
+    }
+    ss.domEventHandler = domEventHandler;
+    
+## Autorender ['ui','html']
+
 Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in the main threa.
     
     if(typeof document !== 'undefined') {
@@ -54,6 +89,8 @@ Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in 
       });
     }
     
+## jsonml2dom
+
     function jsonml2dom(o) { 
       if(typeof o === 'string') {
         return document.createTextNode(o);
@@ -91,6 +128,8 @@ Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in 
     
     ss.main = () => {
 da.setJS(['ui', 'html'], ['h1', 'hello ', ['em', 'world!']]);
+      ss.handle('hello', o => console.log(o));
+      ss.html(`<input onkeydown=${ss.htmlEvent('hello')}>`);
     };
     
 # License
