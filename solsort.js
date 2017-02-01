@@ -36,8 +36,6 @@ ss.slice = da._slice;
 //
 
 ss.htmlEvent = function htmlEvent(name, propagate) {
-  console.log(module.uri);
-  console.log(require('http://localhost:8080/solsort.js'));
   return `require('${module.uri}').domEventHandler('${da.pid}','${name}'` +
       `,'${propagate}')(arguments[0])`;
 };
