@@ -32,36 +32,46 @@ ss.handle = da.handle;
 ss.jsonify = da._jsonify;
 ss.slice = da._slice;
 
+// # Utility functions
+
+// ## set/get
+
+var keypath = k => typeof k === 'string' ? k.split('.') : k;
+
+ss.set = (k, v) => da.setJS(keypath(k), v);
+ss.get = (k, defaultValue) => da.getJS(keypath(k), defaultValue);
+
 // # UI
 //
 
+ss.html = function html(h) { da.setJS(['ui', 'html'], h); };
+
+// ## html event
 ss.htmlEvent = function htmlEvent(name, propagate) {
   return `require('${module.uri}').domEventHandler('${da.pid}','${name}'` +
       `,'${propagate}')(arguments[0])`;
-};
-ss.html = function html(h) {
-  da.setJS(['ui', 'html'], h);
 };
 
 var eventWhitelist =
 ['timeStamp', 'target', 'touches', 'clientX', 'clientY',
   'charCode', 'keyCode', 'key', 'code', 'location',
-  'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat']
-  function domEventHandler(pid,name,propagate) {
-    return function(e) {
-      if(!propagate) {
-        e.preventDefault();
-      }
-      var result = {};
-      for(var i = 0; i < eventWhitelist.length; ++i) {
-        var k = eventWhitelist[i];
-        if (typeof e[k] !== 'undefined') {
-          result[k] = ss.jsonify(e[k]);
-        }
-      }
-      da.run(pid, name, result);
+  'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat'];
+
+function domEventHandler(pid,name,propagate) {
+  return function(e) {
+    if(!propagate) {
+      e.preventDefault();
     }
+    var result = {};
+    for(var i = 0; i < eventWhitelist.length; ++i) {
+      var k = eventWhitelist[i];
+      if (typeof e[k] !== 'undefined') {
+        result[k] = ss.jsonify(e[k]);
+      }
+    }
+    da.run(pid, name, result);
   }
+}
 ss.domEventHandler = domEventHandler;
 
 // ## Autorender ['ui','html']
@@ -69,6 +79,7 @@ ss.domEventHandler = domEventHandler;
 // Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in the main threa.
 
 if(typeof document !== 'undefined') {
+  var react = require('react/dist/react.js');
   da.reaction('solsort:ui-renderer', () => {
     var rootElem = document.getElementById('solsort-ui');
     if(!rootElem) {
@@ -122,22 +133,66 @@ function jsonml2dom(o) {
   }
 }
 
+// ## ss.event
+
+ss.event = (name, propagate) => function() {
+  var args = ss.slice(arguments, 0);
+  console.log('event', name, this, args);
+}
+
+// ## jsonml2react...
+//
+function jsonml2react(o) {
+  if(typeof o === 'string') {
+    return o;
+  } else if(Array.isArray(o)) {
+    var name = o[0];
+    var node = document.createElement(o[0]);
+    var params = o[1];
+    var args = o.slice(2);
+
+    if(typeof params !== 'object' || params.constructor !== Object) {
+      params = {};
+      args = o.slice(1);
+    }
+
+    args = args.map(jsonml2react);
+
+    // In addition to normal element names, we also support names like
+    // 'npmModule:exportedSymbol', which loads an npm-module with require.
+    // Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
+
+    if(name.indexOf(':') !== -1) {
+      name = name.split(':');
+      name = require(name[0])[name[1]];
+    }
+
+    return require('react').createElement.apply(react, [name, params].concat(args));
+  } else {
+    console.log('err', o, typeof o);
+    throw 'unexpected type of parameter to jsonml2dom - ' + o;
+  }
+
+}
+
 // # Main function for testing
 
 ss.main = () => reun.run(() => {
-  //da.setJS(['ui', 'html'], ['h1', 'hello ', ['em', 'world!']]);
   ss.handle('hello', o => console.log(o));
   ss.html(`<input onkeydown=${ss.htmlEvent('hello')}>`);
   if(window.document) {
-    var react = require('react/dist/react.js');
-    var dom = require('react-dom/dist/react-dom-server.js');
-    var StarRating = require('react-star-rating').default;
-    var elem = react.createElement(StarRating, {name: 'hello', onRatingClick: function(a) {
-      console.log(a);
-    }, rating: 5, totalStars:5});
-    ss.html(dom.renderToStaticMarkup(elem));
+    var dom = require('react-dom/dist/react-dom.js');
+    dom.render(
+        jsonml2react(
+          ['div',
+          "hello",
+          ['h1', {onClick: ss.event('here')}, 'hello ', ['em', 'world']],
+          ['input', {onKeyDown: ss.event('keydown')}],
+          ['p', {style: {background: 'red'}}, 'hello ', ['em', 'world']],
+          ['react-star-rating:default', {name: 'hi', onRatingClick: ss.event('hello'), rating: 5}]
+          ])
+        , document.getElementById('solsort-ui'));
   }
-
 });
 
 // # License
