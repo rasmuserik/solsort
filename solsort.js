@@ -46,22 +46,22 @@ ss.html = function html(h) {
 var eventWhitelist =
 ['timeStamp', 'target', 'touches', 'clientX', 'clientY',
   'charCode', 'keyCode', 'key', 'code', 'location',
- 'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat']
-function domEventHandler(pid,name,propagate) {
-  return function(e) {
-    if(!propagate) {
-      e.preventDefault();
-    }
-    var result = {};
-    for(var i = 0; i < eventWhitelist.length; ++i) {
-      var k = eventWhitelist[i];
-      if (typeof e[k] !== 'undefined') {
-        result[k] = ss.jsonify(e[k]);
+  'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat']
+  function domEventHandler(pid,name,propagate) {
+    return function(e) {
+      if(!propagate) {
+        e.preventDefault();
       }
+      var result = {};
+      for(var i = 0; i < eventWhitelist.length; ++i) {
+        var k = eventWhitelist[i];
+        if (typeof e[k] !== 'undefined') {
+          result[k] = ss.jsonify(e[k]);
+        }
+      }
+      da.run(pid, name, result);
     }
-    da.run(pid, name, result);
   }
-}
 ss.domEventHandler = domEventHandler;
 
 // ## Autorender ['ui','html']
@@ -124,11 +124,21 @@ function jsonml2dom(o) {
 
 // # Main function for testing
 
-ss.main = () => {
+ss.main = () => reun.run(() => {
   //da.setJS(['ui', 'html'], ['h1', 'hello ', ['em', 'world!']]);
   ss.handle('hello', o => console.log(o));
   ss.html(`<input onkeydown=${ss.htmlEvent('hello')}>`);
-};
+  if(window.document) {
+    var react = require('react/dist/react.js');
+    var dom = require('react-dom/dist/react-dom-server.js');
+    var StarRating = require('react-star-rating').default;
+    var elem = react.createElement(StarRating, {name: 'hello', onRatingClick: function(a) {
+      console.log(a);
+    }, rating: 5, totalStars:5});
+    ss.html(dom.renderToStaticMarkup(elem));
+  }
+
+});
 
 // # License
 // 
