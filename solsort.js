@@ -25,6 +25,8 @@
 var reun = require('reun@0.1');
 var da = require('direape@0.1');
 var ss = exports;
+ss.log = function() {};
+
 
 // # DireApe passthrough
 
@@ -88,7 +90,9 @@ if(typeof document !== 'undefined') {
     var html = da.getJS(['ui', 'html']);
     if(typeof html === 'string') {
       rootElem.innerHTML = html;
+      ss.log('solsort:ui-renderer', 'html');
     } else if(Array.isArray(html)) {
+      ss.log('solsort:ui-renderer', 'jsonml');
       reun.run(() => {
         var dom = require('react-dom/dist/react-dom.js');
         dom.render(jsonml2react(html), document.getElementById('solsort-ui'));
@@ -236,10 +240,10 @@ ss.main = () => reun.run(() => {
     ss.handle('here', o => alert(`hello (${o.clientX},${o.clientY})`));
     ss.handle('textChange', o => console.log(o));
     ss.html(['div',
-          ['h1', {onClick: ss.event('here', {extract: ['target.value', 'clientX', 'clientY']})}, 'solsort HTML via ', ['em', 'React+JsonML']],
-          ['input', {onKeyDown: ss.event('textChange', {extract: 'target.value'})}],
-          ['react-star-rating:default', {name: 'hi', onRatingClick: ss.event('hello'), rating: 5}]
-          ]);
+        ['h1', {onClick: ss.event('here', {extract: ['target.value', 'clientX', 'clientY']})}, 'solsort HTML via ', ['em', 'React+JsonML']],
+        ['input', {onKeyDown: ss.event('textChange', {extract: 'target.value'})}],
+        ['react-star-rating:default', {name: 'hi', onRatingClick: ss.event('hello'), rating: 5}]
+    ]);
   }
 });
 
