@@ -8,8 +8,12 @@
 //
 // # solsort development library
 //
-// Library, primarily for use within appedit. Wraps direape, fri and reun, and adds extra functionality
-//
+// Library, primarily for use within appedit. Wraps 
+// [direape](https://appedit.solsort.com/?Read/js/gh/solsort/direape), 
+// [fri](https://appedit.solsort.com/?Read/js/gh/solsort/fri), 
+// and 
+// [reun](https://appedit.solsort.com/?Read/js/gh/solsort/reun), 
+// and adds extra functionality
 
 var solsort = exports; var ss = solsort;
 var da = require('direape'); da.testSuite('solsort');
@@ -34,10 +38,11 @@ da.test('examples', () => {
 
   // Increase click-count in the application state, on click-event
 
-  ss.handle('ss:click', () => ss.setJS('click-count', ss.getJS('click-count', 0) + 1));
+  ss.handle('ss:click', () => 
+      ss.setJS('click-count', ss.getJS('click-count', 0) + 1));
 });
 
-// ## Export all symbols from `direape`, `reun` and `fri`
+// ## `direape`, `reun`, and `fri`. Export all symbols from these modules.
 //
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/direape> for details about `DireApe`.
 
@@ -59,7 +64,7 @@ Object.assign(ss, fri);
 
 ss.html = (fn) => ss.rerun('ss:html', () => ss.setJS(['ui', 'html'], fn())); 
 
-// ### ss.event
+// ### `ss.event(name, opt)`
 
 ss.event = (name, opt) => ({solsortEvent: Object.assign({name: name, pid: da.pid}, opt)});
 
