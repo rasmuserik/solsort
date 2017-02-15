@@ -1,9 +1,11 @@
 {
   "name": "solsort",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "solsort library",
   "main": "solsort.js",
-  "scripts": { "test": "true" },
+  "scripts": {
+    "test": "true"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/solsort/solsort"
@@ -14,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/solsort/solsort/issues"
   },
-  "homepage": "http://solsort.solsort.com"
+  "homepage": "http://solsort.solsort.com",
+  "dependencies": {
+    "fri": "^0.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0",
+    "live-server": "^1.2.0",
+    "uglify-js-harmony": "^2.6.2"
+  }
 }

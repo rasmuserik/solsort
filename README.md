@@ -8,140 +8,92 @@
 
 # solsort development library
 
-*Unstable - under development - do not use it yet*
-
-Library, primarily for use within appedit. Wraps direape and reun, and adds extra functionality
-# Examples
-
-Make the app consist of a button, and replace it with text when clicked.
-
-```javascript
-solsort.handle('hello', () => solsort.html('bye');
-solsort.html(`<button onclick=#{solsort.htmlEvent('hello')}>Hi</button>`);
-```
-
-# Dependencies
-
-    var reun = require('reun@0.1');
-    var da = require('direape@0.1');
-    var ss = exports;
-    ss.log = function() {};
-    
-    
-# DireApe passthrough
-    
-    ss.handle = da.handle;
-    ss.jsonify = da._jsonify;
-    ss.slice = da._slice;
-    
-# Utility functions
-    
-## set/get
-    
-    var keypath = k => typeof k === 'string' ? k.split('.') : k;
-    
-    ss.set = (k, v) => da.setJS(keypath(k), v);
-    ss.get = (k, defaultValue) => da.getJS(keypath(k), defaultValue);
-    
-# UI
+Library, primarily for use within appedit. Wraps direape, fri and reun, and adds extra functionality
 
     
-    ss.html = function html(h) { da.setJS(['ui', 'html'], h); };
+    var solsort = exports; var ss = solsort;
+    var da = require('direape'); da.testSuite('solsort');
     
-## html event
-    ss.htmlEvent = function htmlEvent(name, propagate) {
-      return `require('${module.uri}').domEventHandler('${da.pid}','${name}'` +
-          `,'${propagate}')(arguments[0])`;
-    };
+## Examples
     
-    var eventWhitelist =
-    ['timeStamp', 'target', 'touches', 'clientX', 'clientY',
-      'charCode', 'keyCode', 'key', 'code', 'location',
-      'altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'repeat'];
+    da.test('examples', () => {
     
-    function domEventHandler(pid,name,propagate) {
-      return function(e) {
-        if(!propagate) {
-          e.preventDefault();
-        }
-        var result = {};
-        for(var i = 0; i < eventWhitelist.length; ++i) {
-          var k = eventWhitelist[i];
-          if (typeof e[k] !== 'undefined') {
-            result[k] = ss.jsonify(e[k]);
-          }
-        }
-        da.run(pid, name, result);
-      }
-    }
-    ss.domEventHandler = domEventHandler;
+Render the following JSON-HTML
     
-## Autorender ['ui','html']
+      ss.html(() => ['div', 
+    
+Make a heading, that counts the number of clicks
+    
+          ['h1', {onClick: ss.event('ss:click')}, 
+          'Clicks: ', String(ss.getJS('click-count', 0))], 
+    
+Load a react component from npm
+    
+          ['react-star-rating:default', {name: 'hi', rating: 5}]
+      ]);
+    
+Increase click-count in the application state, on click-event
+    
+      ss.handle('ss:click', () => ss.setJS('click-count', ss.getJS('click-count', 0) + 1));
+    });
+    
+## Export all symbols from `direape`, `reun` and `fri`
 
-Automatically render `['ui', 'html']` to `#solsort-ui` element, when running in the main threa.
+See <https://appedit.solsort.com/?Read/js/gh/solsort/direape> for details about `DireApe`.
     
-    if(typeof document !== 'undefined') {
-      var react = require('react/dist/react.js');
-      da.reaction('solsort:ui-renderer', () => {
+    Object.assign(ss, da);
+    da.ready(() => Object.assign(ss, da));
+    
+See <https://appedit.solsort.com/?Read/js/gh/solsort/reun> for details about `Reun`.
+    
+    var reun = require('reun');
+    Object.assign(ss, reun);
+    
+See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI`.
+    
+    var fri = require('fri');
+    Object.assign(ss, fri);
+    
+## API
+### `html(JSON|str)`
+    
+    ss.html = (fn) => ss.rerun('ss:html', () => ss.setJS(['ui', 'html'], fn())); 
+    
+### ss.event
+    
+    ss.event = (name, opt) => ({solsortEvent: Object.assign({name: name, pid: da.pid}, opt)});
+    
+### `['ui','html']` rendered to DOM
+    
+    if(ss.isBrowser()) {
+      require('react/dist/react.js');
+      require('react-dom/dist/react-dom.js');
+      ss.rerun('solsort:ui-renderer', () => {
         var rootElem = document.getElementById('solsort-ui');
         if(!rootElem) {
           return;
         }
-        var html = da.getJS(['ui', 'html']);
+        var html = ss.getJS(['ui', 'html']);
         if(typeof html === 'string') {
           rootElem.innerHTML = html;
-          ss.log('solsort:ui-renderer', 'html');
         } else if(Array.isArray(html)) {
-          ss.log('solsort:ui-renderer', 'jsonml');
-          reun.run(() => {
-            var dom = require('react-dom/dist/react-dom.js');
+          ss.eval(() => {
+            var react = require('react');
+            var dom = require('react-dom');
             dom.render(jsonml2react(html), document.getElementById('solsort-ui'));
           });
         }
       });
     }
     
-## jsonml2dom
-
-    function jsonml2dom(o) { 
-      if(typeof o === 'string') {
-        return document.createTextNode(o);
-      } else if(typeof o === 'undefined') {
-        return document.createTextNode('undefined');
-      } else if(Array.isArray(o)) {
-        var node = document.createElement(o[0]);
-        var tagtype = o[0];
-        var params = o[1];
-        var firstChild;
-        if(typeof params === 'object' && params.constructor === Object) {
-          for(var k in params) {
-            if(k === 'style') {
-              Object.assign(node.style, params[k]);
-            } else {
-              node[k] = params[k];
-            }
-          }
-          firstChild = 2;
-        } else {
-          params = {};
-          firstChild = 1;
-        }
-        for(var i = firstChild; i < o.length; ++i) {
-          node.appendChild(jsonml2dom(o[i]));
-        }
-        return node;
-      } else {
-        console.log('err', o, typeof o);
-        throw 'unexpected type of parameter to jsonml2dom - ' + o;
-      }
-    }
+## Internal details
+### `jsonml2react(jsonml)`
     
-## jsonml2react...
-
     function jsonml2react(o) {
       if(typeof o === 'string') {
         return o;
       } else if(Array.isArray(o)) {
+        var react = require('react');
         var name = o[0];
         var node = document.createElement(o[0]);
         var params = o[1];
@@ -170,7 +122,7 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
           name = require(name[0])[name[1]];
         }
     
-        return require('react').createElement.apply(react, [name, params].concat(args));
+        return react.createElement.apply(react, [name, params].concat(args));
       } else {
         console.log('err', o, typeof o);
         throw 'unexpected type of parameter to jsonml2dom - ' + o;
@@ -178,15 +130,13 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
     
     }
     
-## ss.event
-    
-    ss.event = (name, opt) => {
-      return {solsortEvent: Object.assign({name: name, pid: da.pid}, opt)};
-    }
+### `isSolsortEvent(o)`
     
     function isSolsortEvent(o) {
       return o && typeof o === 'object' && o.solsortEvent && Object.keys(o).length === 1;
     }
+    
+### `makeSolsortCallback(o)`
     
     function makeSolsortCallback(o) {
       o = o.solsortEvent;
@@ -202,19 +152,23 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
         extract = extract.map(o => o.split('.'));
         for(var i = 0; i < extract.length; ++i) {
           jsSetIn(result, extract[i],
-              jsGetIn(e, extract[i]))
+              jsGetIn(e, extract[i]));
         }
-        da.run(o.pid, o.name, result);
-      }
+        da.emit(o.pid, o.name, result);
+      };
     }
+    
+### `jsSetIn(o, path, val)`
     
     function jsSetIn(o, path, val) {
       if(!path.length) { return val; }
       var k = path[0];
       try { o[k] = o[k]; } catch(e) { o = {}; }
       o[k] = jsSetIn(o[k], path.slice(1), val);
-      return o
+      return o;
     }
+    
+### `jsGetIn(o, path, defaultValue)`
     
     function jsGetIn(o, path, defaultValue) {
       try {
@@ -231,21 +185,13 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
       }
     }
     
-# Main function for testing
+## Main
     
-    ss.main = () => reun.run(() => {
-      ss.handle('hello', o => console.log(o));
-      ss.html(`<input onkeydown=${ss.htmlEvent('hello')}>`);
-      if(window.document) {
-        ss.handle('here', o => alert(`hello (${o.clientX},${o.clientY})`));
-        ss.handle('textChange', o => console.log(o));
-        ss.html(['div',
-            ['h1', {onClick: ss.event('here', {extract: ['target.value', 'clientX', 'clientY']})}, 'solsort HTML via ', ['em', 'React+JsonML']],
-            ['input', {onKeyDown: ss.event('textChange', {extract: 'target.value'})}],
-            ['react-star-rating:default', {name: 'hi', onRatingClick: ss.event('hello'), rating: 5}]
-        ]);
-      }
-    });
+    if(require.main === module) {
+      ss.ready(() => {
+        ss.runTests('solsort');
+      });
+    }
     
 # License
 
@@ -253,3 +199,4 @@ This software is copyrighted solsort.com ApS, and available under GPLv3, as well
 
 Versions older than 10 years also fall into the public domain.
 
+    
