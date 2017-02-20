@@ -148,9 +148,7 @@ if(da.isBrowser()) {
 // ### `jsonml2react(jsonml)`
 
 function jsonml2react(o) {
-  if(typeof o === 'string') {
-    return o;
-  } else if(Array.isArray(o)) {
+  if(Array.isArray(o)) {
     var react = require('react');
     var name = o[0];
     var node = document.createElement(o[0]);
@@ -198,10 +196,8 @@ function jsonml2react(o) {
 
     return react.createElement.apply(react, [name, params].concat(args));
   } else {
-    console.log('err', o, typeof o);
-    throw 'unexpected type of parameter to jsonml2dom - ' + o;
+    return String(o);
   }
-
 }
 
 // ### `isSolsortEvent(o)`

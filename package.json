@@ -1,6 +1,6 @@
 {
   "name": "solsort",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "solsort library",
   "main": "solsort.js",
   "scripts": {
