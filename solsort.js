@@ -101,6 +101,7 @@ ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
 // ### `loadStyle(style_element_id, json_css)`
 
 ss.loadStyle = (name, style) => {
+  name = name + '-css';
   var elem = document.getElementById(name);
   if(!elem) {
     elem = document.createElement('style');
