@@ -101,8 +101,9 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
 ### `loadStyle(style_element_id, json_css)`
     
     ss.loadStyle = (name, style) => {
+      name = name + '-css';
       var elem = document.getElementById(name);
-      if(!document.getElementById(name)) {
+      if(!elem) {
         elem = document.createElement('style');
         elem.id = name;
         document.head.appendChild(elem);
@@ -115,7 +116,8 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
           if(typeof value === 'number') {
             value = value + 'px';
           }
-          str += property + ':' + value + ';';
+          str += property.replace(/[A-Z]/g, s => '-' + s.toLowerCase());
+          str += ':' + value + ';';
         }
         str += '}';
       }
@@ -125,14 +127,14 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
     if(da.isBrowser()) {
       da.test('loadStyle', () => {
         var testStyle = {
-          '.testStyle': { background: 'red', width: 100 },
+          '.testStyle': { textColor: 'red', width: 100 },
           '.testStyle2': { }
         };
-        Promise.resolve(ss.loadStyle('testStyle', testStyle))
+        return Promise.resolve(ss.loadStyle('testStyle', testStyle))
           .then(() => ss.sleep())
           .then(() => da.assertEquals(
-                document.getElementById('testStyle').innerHTML,
-                '.testStyle{background:red;width:100px;}.testStyle2{}'));
+                document.getElementById('testStyle-css').innerHTML,
+                '.testStyle{text-color:red;width:100px;}.testStyle2{}'));
       });
     }
     

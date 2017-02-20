@@ -12,7 +12,7 @@ do
   echo $! > .pid
   cat solsort.js | sed -e 's/^/    /' | sed -e 's/^ *[/][/] \?//' > README.md
   ./node_modules/.bin/eslint solsort.js &
-  ./node_modules/.bin/uglifyjs -c 'pure_funcs=["da.test"]' < solsort.js > solsort.min.js 2> /dev/zero &
+#  ./node_modules/.bin/uglifyjs -c 'pure_funcs=["da.test"]' < solsort.js > solsort.min.js 2> /dev/zero &
   sleep 3
 done
 

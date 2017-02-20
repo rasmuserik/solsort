@@ -116,7 +116,8 @@ ss.loadStyle = (name, style) => {
       if(typeof value === 'number') {
         value = value + 'px';
       }
-      str += property + ':' + value + ';';
+      str += property.replace(/[A-Z]/g, s => '-' + s.toLowerCase());
+      str += ':' + value + ';';
     }
     str += '}';
   }
@@ -126,14 +127,14 @@ ss.loadStyle = (name, style) => {
 if(da.isBrowser()) {
   da.test('loadStyle', () => {
     var testStyle = {
-      '.testStyle': { background: 'red', width: 100 },
+      '.testStyle': { textColor: 'red', width: 100 },
       '.testStyle2': { }
     };
-    Promise.resolve(ss.loadStyle('testStyle', testStyle))
+    return Promise.resolve(ss.loadStyle('testStyle', testStyle))
       .then(() => ss.sleep())
       .then(() => da.assertEquals(
-            document.getElementById('testStyle').innerHTML,
-            '.testStyle{background:red;width:100px;}.testStyle2{}'));
+            document.getElementById('testStyle-css').innerHTML,
+            '.testStyle{text-color:red;width:100px;}.testStyle2{}'));
   });
 }
 
