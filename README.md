@@ -82,14 +82,60 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
         if(typeof html === 'string') {
           rootElem.innerHTML = html;
         } else if(Array.isArray(html)) {
-          ss.eval(() => {
-            var react = require('react');
-            var dom = require('react-dom');
-            dom.render(jsonml2react(html), document.getElementById('solsort-ui'));
-          });
+          ss.renderJsonml(html, rootElem);
         }
       });
     }
+    
+## `sleep(ms)`
+    
+    ss.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms || 0));
+    
+## `renderJsonml(jsonml, DOM_element)`
+    
+    ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
+      var dom = require('react-dom');
+      dom.render(jsonml2react(jsonml), elem);
+    });
+    
+## `loadStyle(style_element_id, json_css)`
+    
+    ss.loadStyle = (name, style) => {
+      var elem = document.getElementById(name);
+      if(!document.getElementById(name)) {
+        elem = document.createElement('style');
+        elem.id = name;
+        document.head.appendChild(elem);
+      }
+      var str = '';
+      for(var selector in style) {
+        str += selector + '{';
+        for(var property in style[selector]) {
+          var value = style[selector][property];
+          if(typeof value === 'number') {
+            value = value + 'px';
+          }
+          str += property + ':' + value + ';';
+        }
+        str += '}';
+      }
+      elem.innerHTML = str;
+    };
+    
+    if(da.isBrowser()) {
+      da.test('loadStyle', () => {
+        var testStyle = {
+          '.testStyle': { background: 'red', width: 100 },
+          '.testStyle2': { }
+        };
+        Promise.resolve(ss.loadStyle('testStyle', testStyle))
+          .then(() => ss.sleep())
+          .then(() => da.assertEquals(
+                document.getElementById('testStyle').innerHTML,
+                '.testStyle{background:red;width:100px;}.testStyle2{}'));
+      });
+    }
+    
     
 ## Internal details
 ### `jsonml2react(jsonml)`
