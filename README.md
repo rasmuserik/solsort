@@ -28,7 +28,7 @@ Render the following JSON-HTML
     
 Make a heading, that counts the number of clicks
     
-          ['h1', {onClick: ss.event('ss:click')}, 
+          ['h1.red', {onClick: ss.event('ss:click')}, 
           'Clicks: ', String(ss.getJS('click-count', 0))], 
     
 Load a react component from npm
@@ -40,6 +40,11 @@ Increase click-count in the application state, on click-event
     
       ss.handle('ss:click', () => 
           ss.setJS('click-count', ss.getJS('click-count', 0) + 1));
+    
+Set some styling
+      if(ss.isBrowser()) {
+        ss.loadStyle('myStyle', {'.red': {background: 'red'}});
+      }
     });
     
 ## `direape`, `reun`, and `fri`. Export all symbols from these modules.
@@ -155,16 +160,11 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
         if(typeof params !== 'object' || params.constructor !== Object) {
           params = {};
           args = o.slice(1);
+        } else {
+          params = Object.assign({}, params);
         }
     
         args = args.map(jsonml2react);
-    
-        for(var k in params) {
-          var v = params[k];
-          if(isSolsortEvent(params[k])) {
-            params[k] = makeSolsortCallback(v);
-          }
-        }
     
 In addition to normal element names, we also support names like
 'npmModule:exportedSymbol', which loads an npm-module with require.
@@ -173,6 +173,27 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
         if(name.indexOf(':') !== -1) {
           name = name.split(':');
           name = require(name[0])[name[1]];
+    
+        } else {
+    
+          name = name.replace(/[.][^.#]*/g, (cls) => {
+            params.className = params.className || '';
+            params.className += ' ' + cls.slice(1);
+            return '';
+          });
+    
+        }
+    
+        for(var k in params) {
+          var v = params[k];
+          if(k === 'class') {
+            params.className += ' ' + v;
+            params.className = params.className.trim();
+            delete params.class;
+          }
+          if(isSolsortEvent(v)) {
+            params[k] = makeSolsortCallback(v);
+          }
         }
     
         return react.createElement.apply(react, [name, params].concat(args));
