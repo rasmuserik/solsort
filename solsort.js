@@ -228,7 +228,7 @@ function makeSolsortCallback(o) {
       jsSetIn(result, extract[i],
           jsGetIn(e, extract[i]));
     }
-    da.emit(o.pid, o.name, result);
+    da.emit(o.pid, o.name, result, o.data);
   };
 }
 

@@ -228,7 +228,7 @@ Example: `['react-star-rating:default', {name: 'hi', rating: 5}]`
           jsSetIn(result, extract[i],
               jsGetIn(e, extract[i]));
         }
-        da.emit(o.pid, o.name, result);
+        da.emit(o.pid, o.name, result, o.data);
       };
     }
     
