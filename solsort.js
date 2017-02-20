@@ -102,7 +102,7 @@ ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
 
 ss.loadStyle = (name, style) => {
   var elem = document.getElementById(name);
-  if(!document.getElementById(name)) {
+  if(!elem) {
     elem = document.createElement('style');
     elem.id = name;
     document.head.appendChild(elem);
