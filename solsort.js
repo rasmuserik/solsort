@@ -87,18 +87,18 @@ if(ss.isBrowser()) {
   });
 }
 
-// ## `sleep(ms)`
+// ### `sleep(ms)`
 
 ss.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms || 0));
 
-// ## `renderJsonml(jsonml, DOM_element)`
+// ### `renderJsonml(jsonml, DOM_element)`
 
 ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
   var dom = require('react-dom');
   dom.render(jsonml2react(jsonml), elem);
 });
 
-// ## `loadStyle(style_element_id, json_css)`
+// ### `loadStyle(style_element_id, json_css)`
 
 ss.loadStyle = (name, style) => {
   var elem = document.getElementById(name);
