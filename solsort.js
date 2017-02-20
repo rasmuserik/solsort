@@ -79,11 +79,11 @@ if(ss.isBrowser()) {
   require('react/dist/react.js');
   require('react-dom/dist/react-dom.js');
   ss.rerun('solsort:ui-renderer', () => {
+    var html = ss.getJS(['ui', 'html']);
     var rootElem = document.getElementById('solsort-ui');
     if(!rootElem) {
       return;
     }
-    var html = ss.getJS(['ui', 'html']);
     if(typeof html === 'string') {
       rootElem.innerHTML = html;
     } else if(Array.isArray(html)) {
