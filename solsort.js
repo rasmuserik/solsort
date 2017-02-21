@@ -65,6 +65,7 @@ var fri = require('fri');
 Object.assign(ss, fri);
 
 // ## API
+
 // ### `html(JSON|str)`
 
 ss.html = (fn) => ss.rerun('ss:html', () => ss.setJS(['ui', 'html'], fn())); 
@@ -143,8 +144,58 @@ if(da.isBrowser()) {
   });
 }
 
+// ### `loadCss(url)`
+
+ss.loadCss = (url) => {
+  var id = url.toLowerCase().replace(/[^a-z0-9]/g,'');
+  var elem;
+  if(!document.getElementById(id)) {
+    elem = document.createElement('link');
+    elem.rel = 'stylesheet';
+    elem.id = id;
+    elem.href = url;
+    document.head.appendChild(elem);
+  }
+};
+
+// ### `bodyElem(id, type)`
+
+ss.bodyElem = (id, type) => {
+  type = type || 'div';
+  var elem = document.getElementById(id);
+  if(!elem) {
+    elem = document.createElement(type);
+    elem.id = id;
+    document.body.appendChild(elem);
+  }
+  return elem;
+};
+
+// ### URI Routing 
+if(da.isBrowser()) {
+  da.ready(() => {
+
+
+    var search = location.search.slice(1);
+    if(search) {
+      var route = {};
+      search = search.split('&').map(s => s.split('='));
+      for(var kv of search) {
+        var k = kv[0], v = kv[1];
+        route[uriParse(k)] = uriParse(v);
+      }
+      ss.setJS('route', route);
+    }
+
+    ss.rerun('ss:route-url', () =>
+        history.replaceState(null, null,
+          location.href.replace(/[?].*.?/, '') + routeUrl()));
+  });
+}
+
 
 // ## Internal details
+
 // ### `jsonml2react(jsonml)`
 
 function jsonml2react(o) {
@@ -253,6 +304,43 @@ function jsGetIn(o, path, defaultValue) {
   } catch(e) {
     return defaultValue;
   }
+}
+
+// ### `routeUrl()`
+//
+// Converts the current route state into a url-search-component
+
+function routeUrl() {
+  var params = [];
+  var route = ss.getJS('route');
+  for(var k in route) {
+    if(route[k] !== undefined) {
+      params.push(uriStringify(k) + '=' + uriStringify(route[k]));
+    }
+  }
+  return '?' + params.join('&');
+}
+
+// ### `uriParse(str)`
+//
+// Converts an uri component string into json
+
+function uriParse(s) {
+  s = decodeURIComponent(s);
+  try { s = JSON.parse(s); } catch(_) { true; }
+  return s;
+}
+
+// ### `uriStringify(json)`
+//
+// Converts json to an uri-component string
+
+function uriStringify(s) {
+  try {
+    JSON.parse(s);
+    s = JSON.stringify(s);
+  } catch(_) { true; }
+  return encodeURIComponent(s);
 }
 
 // ## Main
