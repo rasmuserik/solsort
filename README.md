@@ -74,7 +74,13 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
     
 ### `html(JSON|str)`
     
-    ss.html = (fn) => ss.rerun('ss:html', () => ss.setJS(['ui', 'html'], fn())); 
+    ss.html = (val) => {
+      if(typeof val=== 'function') {
+        ss.rerun('ss:html', () => ss.set(['ui', 'html'], val())); 
+      } else {
+        ss.set(['ui', 'html'], val);
+      }
+    };
     
 ### `ss.event(name, opt)`
     
