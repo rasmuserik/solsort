@@ -66,6 +66,12 @@ Object.assign(ss, fri);
 
 // ## API
 
+// ### `set`, `get`, `update`
+
+ss.set = fri.setJS;
+ss.get = fri.getJS;
+ss.update = (path, f) => ss.set(path, f(ss.get(path)));
+
 // ### `html(JSON|str)`
 
 ss.html = (fn) => ss.rerun('ss:html', () => ss.setJS(['ui', 'html'], fn())); 
