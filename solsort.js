@@ -201,7 +201,7 @@ if(da.isBrowser()) {
 
     ss.rerun('ss:route-url', () =>
         history.replaceState(null, null,
-          location.href.replace(/[?].*.?/, '') + routeUrl()));
+          location.href.replace(/[?#].*.?/, '') + routeUrl()));
   });
 }
 
