@@ -166,6 +166,9 @@ if(da.isBrowser()) {
 // ### `loadCss(url)`
 
 ss.loadCss = (url) => {
+  if(typeof document === 'undefined') {
+    return;
+  }
   var id = url.toLowerCase().replace(/[^a-z0-9]/g,'');
   var elem;
   if(!document.getElementById(id)) {
