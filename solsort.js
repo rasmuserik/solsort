@@ -123,6 +123,9 @@ ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
 // ### `loadStyle(style_element_id, json_css)`
 
 ss.loadStyle = (name, style) => {
+  if(typeof document === 'undefined') {
+    return;
+  }
   name = name + '-css';
   var elem = document.getElementById(name);
   if(!elem) {
@@ -343,7 +346,7 @@ function routeUrl() {
 
 function uriParse(s) {
   s = decodeURIComponent(s);
-  try { s = JSON.parse(s); } catch(_) { }
+  try { s = JSON.parse(s); } catch(_) { /* empty */ }
   return s;
 }
 
@@ -355,7 +358,7 @@ function uriStringify(s) {
   try {
     JSON.parse(s);
     s = JSON.stringify(s);
-  } catch(_) { }
+  } catch(_) { /* empty */ }
   return encodeURIComponent(s);
 }
 
