@@ -18,6 +18,10 @@
 var solsort = exports; var ss = solsort;
 var da = require('direape'); da.testSuite('solsort');
 
+var info = {
+  github: 'solsort/solsort'
+};
+
 // ## Examples
 
 da.test('examples', () => {
@@ -51,8 +55,8 @@ da.test('examples', () => {
 //
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/direape> for details about `DireApe`.
 
-Object.assign(ss, da);
-da.ready(() => Object.assign(ss, da));
+Object.assign(ss, da, {info: info});
+da.ready(() => Object.assign(ss, da, {info: info}));
 
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/reun> for details about `Reun`.
 
@@ -339,7 +343,7 @@ function routeUrl() {
 
 function uriParse(s) {
   s = decodeURIComponent(s);
-  try { s = JSON.parse(s); } catch(_) { true; }
+  try { s = JSON.parse(s); } catch(_) { }
   return s;
 }
 
@@ -351,7 +355,7 @@ function uriStringify(s) {
   try {
     JSON.parse(s);
     s = JSON.stringify(s);
-  } catch(_) { true; }
+  } catch(_) { }
   return encodeURIComponent(s);
 }
 
