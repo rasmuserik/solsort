@@ -18,7 +18,9 @@
   },
   "homepage": "http://solsort.solsort.com",
   "dependencies": {
-    "fri": "^0.2.0"
+    "direape": "^0.2.12",
+    "fri": "^0.2.0",
+    "reun": "^0.2.7"
   },
   "devDependencies": {
     "eslint": "^3.15.0",

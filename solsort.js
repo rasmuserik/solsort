@@ -18,6 +18,10 @@
 var solsort = exports; var ss = solsort;
 var da = require('direape'); da.testSuite('solsort');
 
+var info = {
+  github: 'solsort/solsort'
+};
+
 // ## Examples
 
 da.test('examples', () => {
@@ -51,8 +55,8 @@ da.test('examples', () => {
 //
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/direape> for details about `DireApe`.
 
-Object.assign(ss, da);
-da.ready(() => Object.assign(ss, da));
+Object.assign(ss, da, {info: info});
+da.ready(() => Object.assign(ss, da, {info: info}));
 
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/reun> for details about `Reun`.
 
@@ -125,6 +129,9 @@ ss.renderJsonml = (jsonml, elem) => ss.eval(() => {
 // ### `loadStyle(style_element_id, json_css)`
 
 ss.loadStyle = (name, style) => {
+  if(typeof document === 'undefined') {
+    return;
+  }
   name = name + '-css';
   var elem = document.getElementById(name);
   if(!elem) {
@@ -165,6 +172,9 @@ if(da.isBrowser()) {
 // ### `loadCss(url)`
 
 ss.loadCss = (url) => {
+  if(typeof document === 'undefined') {
+    return;
+  }
   var id = url.toLowerCase().replace(/[^a-z0-9]/g,'');
   var elem;
   if(!document.getElementById(id)) {
@@ -345,7 +355,7 @@ function routeUrl() {
 
 function uriParse(s) {
   s = decodeURIComponent(s);
-  try { s = JSON.parse(s); } catch(_) { true; }
+  try { s = JSON.parse(s); } catch(_) { /* empty */ }
   return s;
 }
 
@@ -357,7 +367,7 @@ function uriStringify(s) {
   try {
     JSON.parse(s);
     s = JSON.stringify(s);
-  } catch(_) { true; }
+  } catch(_) { /* empty */ }
   return encodeURIComponent(s);
 }
 
