@@ -102,11 +102,13 @@ See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI
           return;
         }
         ss.nextTick(() => {
-          ss.set('ui.client.top', rootElem.clientTop);
-          ss.set('ui.client.left', rootElem.clientLeft);
-          ss.set('ui.client.height', rootElem.clientHeight);
-          ss.set('ui.client.width', rootElem.clientWidth);
-        })
+          ss.set('ui.client', {
+            top: rootElem.clientTop,
+            left: rootElem.clientLeft,
+            height: rootElem.clientHeight,
+            width: rootElem.clientWidth
+          });
+        });
         if(typeof html === 'string') {
           rootElem.innerHTML = html;
         } else if(Array.isArray(html)) {
