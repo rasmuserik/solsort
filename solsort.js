@@ -102,11 +102,14 @@ if(ss.isBrowser()) {
       return;
     }
     ss.nextTick(() => {
-      ss.set('ui.client', {
-        top: rootElem.clientTop,
-        left: rootElem.clientLeft,
-        height: rootElem.clientHeight,
-        width: rootElem.clientWidth
+      var bounds = rootElem.getBoundingClientRect();
+      ss.set('ui.bounds', {
+        top: bounds.top,
+        left: bounds.left,
+        right: bounds.right,
+        bottom: bounds.bottom,
+        width: bounds.width,
+        height: bounds.height,
       });
     });
     if(typeof html === 'string') {
