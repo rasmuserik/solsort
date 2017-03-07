@@ -303,7 +303,7 @@ function makeSolsortCallback(o) {
     if(typeof extract === 'string') {
       extract = [extract];
     }
-    extract = extract.map(o => o.split('.'));
+    extract = extract.map(o => Array.isArray(o) ? o : o.split('.'));
     for(var i = 0; i < extract.length; ++i) {
       jsSetIn(result, extract[i],
           jsGetIn(e, extract[i]));
