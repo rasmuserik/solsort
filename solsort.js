@@ -16,7 +16,7 @@
 // and adds extra functionality
 
 var solsort = exports; var ss = solsort;
-var da = require('direape'); da.testSuite('solsort');
+var da = require('direape@0.2'); da.testSuite('solsort');
 
 var info = {
   github: 'solsort/solsort'
@@ -60,12 +60,12 @@ da.ready(() => Object.assign(ss, da, {info: info}));
 
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/reun> for details about `Reun`.
 
-var reun = require('reun');
+var reun = require('reun@0.2');
 Object.assign(ss, reun);
 
 // See <https://appedit.solsort.com/?Read/js/gh/solsort/fri> for details about `FRI`.
 
-var fri = require('fri');
+var fri = require('fri@0.2');
 Object.assign(ss, fri);
 
 // ## API
